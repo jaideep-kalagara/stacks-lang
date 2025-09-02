@@ -1,6 +1,10 @@
 #ifdef _WIN32
 #pragma once
 
+#include "parser.h"
+
+char *windows_codegen(node_t *ast);
+
 int windows_run_nasm(const char *filename);
 
 int windows_run_ld(const char *filename, const char **libs);

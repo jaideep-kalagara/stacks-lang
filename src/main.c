@@ -1,7 +1,9 @@
 #include "file.h"
 #include "lexer.h"
+#include "parser.h"
 #include "token.h"
 #include "windows_back.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -19,32 +21,28 @@ int main(int argc, char *argv[]) {
   }
   size_t file_size = strlen(file_content);
 
-  // Lexing the file content
-  lexer_t lx;
-  lexer_init(&lx, file_content);
+  // Initialize parser
+  parser_t parser;
+  parser_init(&parser, file_content);
+  node_t *root = make_program();
 
-  token_t **tokens = (token_t **)malloc(file_size * sizeof(token_t *));
-  size_t token_count = 0;
-
-  for (;;) {
-    token_t *t = lexer_next_token(&lx);
-    if (t->type == TOKEN_EOF) {
-      tokens[token_count++] = t;
-      break;
-    }
-    tokens[token_count++] = t;
+  while (parser.current_token->type != TOKEN_EOF) {
+    node_t *stmt = parse_statement(&parser);
+    program_push(root, stmt);
   }
+
+  print_ast(root, 0);
+
+  // char *code = windows_codegen(root);
+  // write_file("temp.asm", code);
 
   goto cleanup;
 
   // cleanup
 cleanup:
-  for (size_t i = 0; i < token_count; i++) {
-    print_token(tokens[i]);
-    free_token(tokens[i]);
-  }
+  parser_destroy(&parser);
+  free_node(root);
   free_file_content(file_content);
-  free(tokens);
 
   return 0;
 }

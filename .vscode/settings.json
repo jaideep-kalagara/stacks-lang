@@ -2,6 +2,8 @@
     "files.associations": {
         "*.css": "tailwindcss",
         "*.S": "gas",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "windows_back.h": "c",
+        "stdio.h": "c"
     }
 }

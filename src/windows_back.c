@@ -1,10 +1,17 @@
 #ifdef _WIN32
 #include "windows_back.h"
+#include "parser.h"
 
 #include <process.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+char *windows_codegen(node_t *ast) {
+  if (!ast)
+    return NULL;
+  return "data";
+}
 
 int windows_run_nasm(const char *filename) {
   if (!filename || !*filename)
