@@ -1,3 +1,4 @@
+#ifdef _WIN32
 #include "windows_back.h"
 
 #include <process.h>
@@ -68,6 +69,7 @@ int windows_run_ld(const char *filename, const char **libs) {
   return _spawnl(_P_WAIT,
                  ".\\tools\\ld.exe", // program path
                  "ld",               // argv[0]
+                 "-e_start",         // entry point
                  "-o", outexe,       // output file
                  filename,           // input file
                  libargs,            // libraries
@@ -95,3 +97,4 @@ int windows_compile_asm(const char *filename, const char **libs) {
 
   return 0;
 }
+#endif // _WIN32
