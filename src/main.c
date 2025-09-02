@@ -2,9 +2,10 @@
 #include "token.h"
 #include "windows_back.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 int main(int argc, char *argv[]) {
-  // TEST: load asm file and compile it
+  // TEST: load asm file and compile it for windows
   // if (argc != 2) {
   //   printf("Usage: %s <filename>\n", argv[0]);
   //   return 1;
@@ -28,13 +29,61 @@ int main(int argc, char *argv[]) {
   // free_token(t1);
   // free_token(t2);
 
-  // TEST: token parsing
-  char *input = "exit 42;";
-  lexer_t lexer = {input, 0, input[0], input[1]};
+  // TEST: lexing
+  // const char *input = "exit 0;";
+  // lexer_t lx;
+  // lexer_init(&lx, input);
 
-  while (token_t token = lexer_advance(&lexer); token.type != TOKEN_EOF) {
-    print_token(&token);
+  // printf("Lexing input: %s\n", input);
+
+  // for (;;) {
+  //   token_t *t = lexer_next_token(&lx);
+  //   if (t->type == TOKEN_EOF) {
+  //     free_token(t);
+  //     break;
+  //   }
+  //   print_token(t);
+  //   free_token(t);
+  // }
+
+  if (argc != 2) {
+    printf("Usage: %s <filename>\n", argv[0]);
+    return 1;
   }
 
+  FILE *file = fopen(argv[1], "rb");
+  if (!file) {
+    printf("Failed to open file %s\n", argv[1]);
+    return 1;
+  }
+
+  // get file size
+  fseek(file, 0, SEEK_END);
+  size_t file_size = ftell(file);
+  rewind(file);
+
+  char *file_content = (char *)malloc(file_size + 1);
+
+  // read file content into buffer
+  fread(file_content, 1, file_size, file);
+  file_content[file_size] = '\0';
+
+  fclose(file);
+
+  // Lexing the file content
+  lexer_t lx;
+  lexer_init(&lx, file_content);
+
+  for (;;) {
+    token_t *t = lexer_next_token(&lx);
+    if (t->type == TOKEN_EOF) {
+      free_token(t);
+      break;
+    }
+    print_token(t);
+    free_token(t);
+  }
+
+  free(file_content);
   return 0;
 }
